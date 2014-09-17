@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="images/favicon.png">
+
+  <title>No la cagues</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  
+</head>
+
+<body>
+ <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+
+    </style>
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><span class="gold-text">@</span> CodeCountry.net</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#coders">Coders</a></li>
+          <li><a href="#contributors">Contributors</a></li>
+          <li><a href="#contributors">DL Logo</a></li>
+          <li><a href="#pledge"><u><strong>Pledge</strong></u></a></li>
+        </ul>
+
+        <div class="pull-right">
+          <ul class="pull-right navbar-nav list-inline social-bar">
+            <li><a id="fb"   target="_blank" href="http://www.facebook.com/BuiltByBROS"></a></li>
+            <li><a id="tw"   target="_blank" href="http://twitter.com/BuiltByBROS"></a></li>
+            <li><a id="ytb"  target="_blank" href="http://youtube.com/BuiltByBROS"></a></li>
+          </ul>
+        </div>
+      </div><!--/.nav-collapse -->
+
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <h1>Geo map!</h1>
+      <p>Texto de prueba</p>
+    </div>
+       
+    <div class="col-md-8 col-xs-12" id="mapholder">
+
+    </div>
+
+    <div class="col-md-4 col-xs-12">
+      <div id="sidebar">
+        ddd
+      </div>
+    </div>
+
+  </div> <!-- /container -->
+
+  <footer role="contentinfo" class="navbar-inverse ">
+    <div class="container">
+
+    </div>
+  </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+    <script type="text/javascript">
+var map;
+var marker;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 16,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+
+  // Try HTML5 geolocation
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = new google.maps.LatLng(position.coords.latitude,
+                                       position.coords.longitude);
+
+
+      var infowindow = new google.maps.InfoWindow({
+        map: map,
+        position: pos,
+        content: 'VOS'
+      });
+
+      map.setCenter(pos);
+    }, function() {
+      handleNoGeolocation(true);
+    });
+  } else {
+    // Browser doesn't support Geolocation
+    handleNoGeolocation(false);
+  }
+
+
+  var IMM = new google.maps.LatLng(-34.906456, -56.186262);
+
+  //Dog Marker
+  var dogMarkerImage = {
+    url:'images/marker_dog.png',
+    size: new google.maps.Size(48, 35)
+  };
+
+
+ marker = new google.maps.Marker({
+    map:map,
+    draggable:false,
+    animation: google.maps.Animation.DROP,
+    position: IMM,
+    icon:  dogMarkerImage
+  });
+
+  google.maps.event.addListener(marker, 'click', toggleBounce);
+
+}
+
+function handleNoGeolocation(errorFlag) {
+  if (errorFlag) {
+    var content = 'Error: The Geolocation service failed.';
+  } else {
+    var content = 'Error: Your browser doesn\'t support geolocation.';
+  }
+
+  var options = {
+    map: map,
+    position: new google.maps.LatLng(-34.906456, -56.186262), //Por default la IMM
+    content: content
+  };
+
+  var infowindow = new google.maps.InfoWindow(options);
+  map.setCenter(options.position);
+
+}
+
+
+function toggleBounce() {
+
+  if (marker.getAnimation() != null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+}
+
+
+/* =========================================================
+  Distances
+============================================================ */
+function calculateDistances(lat1,lon1) {
+    var lat2= -34.9066742;
+    var lon2 = -56.2096613;
+
+    var R = 6371; // km (change this constant to get miles)
+    var dLat = (lat2-lat1) * Math.PI / 180;
+    var dLon = (lon2-lon1) * Math.PI / 180; 
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180 ) * Math.cos(lat2 * Math.PI / 180 ) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    var d = R * c;
+     alert(d);
+    if (d>1) return Math.round(d)+"km";
+    else if (d<=1) return Math.round(d*1000)+"m";
+
+    return d;
+}
+
+
+
+//load map
+google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+
+    <div id="content-pane">
+      <div id="inputs">
+       
+        <p><button type="button" onclick="calculateDistances(-34.906456, -56.186262);">Calculate
+          distances</button></p>
+      </div>
+      <div id="outputDiv"></div>
+    </div>
+  <div id="map-canvas"></div>
+  </body>
+  </html>
